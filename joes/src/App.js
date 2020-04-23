@@ -48,6 +48,10 @@ const getUsers = () => {
   })
 }
 
+useEffect(() =>{
+getUsers()
+}, [])
+
 const onInputChange = evt => {
   const name = evt.target.name
   const value = evt.target.value
