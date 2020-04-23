@@ -52,6 +52,16 @@ useEffect(() =>{
 getUsers()
 }, [])
 
+const postUser = user => {
+  axios.get(url, user)
+  .then(res => {
+    setUser([...user, res.data])
+  })
+  .catch(err => {
+    debugger
+  })
+}
+
 const onInputChange = evt => {
   const name = evt.target.name
   const value = evt.target.value
@@ -72,7 +82,10 @@ const onSubmit = evt => {
   const newUser = {
     name: formValues.name,
     email: formValues.email,
+    married: formValues.civil === 'single' ? false : true,
     password: formValues.password
+    termsOfService: Object.keys(formValues.termsOfService)
+    .filter(termsOfService => formValues.termsOfService[termsOfService] ===true)
   }
   setUser([...user, newUser])
 
