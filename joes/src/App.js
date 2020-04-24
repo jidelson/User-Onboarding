@@ -4,7 +4,7 @@ import './App.css';
 import Form from './Form.js'
 import User from './User.js'
 import axios from 'axios';
-import * as Yup from "yup";
+import * as yup from "yup";
 
 const initialFormValues = [
   {
@@ -24,11 +24,26 @@ civil:'',
 termsOfService:''
 }
 
+const formSchema = yup.object().shape({
+  name: yup
+.string()
+.min(2, 'Name must have at least 2 characters')
+.required('Name is required!'),
+
+  email: yup
+  .string()
+  .email('A valid email is required!')
+  .required('Email is required')
+  // password:
+  // civil:
+  // termsOfService:
+})
+
 
 
 const url= 'https://reqres.in/api/users'
 
-//testing
+
 
 
 function App() {
@@ -41,10 +56,10 @@ const [formErrors, setFormErrors] = useState(initialFormErrors)
 const getUsers = () => {
   axios.get(url)
   .then(res => {
-    setUser(res.data)
+    setUser([...user, res.data])
   })
   .catch(err => {
-    debugger
+    
   })
 }
 
@@ -58,7 +73,7 @@ const postUser = user => {
     setUser([...user, res.data])
   })
   .catch(err => {
-    debugger
+    
   })
 }
 
@@ -82,14 +97,14 @@ const onSubmit = evt => {
   const newUser = {
     name: formValues.name,
     email: formValues.email,
-    married: formValues.civil === 'single' ? false : true,
-    password: formValues.password
+    civil: formValues.civil === 'single' ? false : true,
+    password: formValues.password,
     termsOfService: Object.keys(formValues.termsOfService)
     .filter(termsOfService => formValues.termsOfService[termsOfService] ===true)
   }
-  setUser([...user, newUser])
-
-setFormValues(initialFormValues)
+    setUser([...user, newUser])
+    postUser(newUser)
+    setFormValues(initialFormValues)
 }
 
   return (
@@ -98,13 +113,13 @@ setFormValues(initialFormValues)
       <h1>User Form</h1>
       </header>
 
-      {
+      {/* {
         user.map(user => {
-          return (
+          return (  
             <User key={user.id} details={user} />
           )
         })
-      }
+      } */}
 
       <Form
       values = {formValues}
