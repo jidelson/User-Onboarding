@@ -26,16 +26,25 @@ termsOfService:''
 
 const formSchema = yup.object().shape({
   name: yup
-.string()
-.min(2, 'Name must have at least 2 characters')
-.required('Name is required!'),
+  .string()
+  .min(2, 'Name must have at least 2 characters')
+  .required('Name is required!'),
 
   email: yup
   .string()
   .email('A valid email is required!')
-  .required('Email is required')
-  // password:
-  // civil:
+  .required('Email is required'),
+
+  civil: yup
+  .string()
+  .matches(/(married|single)/, 'Either single or married')
+  .required('civil status is required'),
+  
+  password: yup
+  .string()
+  .min(6, 'Password must have at least 6 characters')
+  .required('Password is required')
+  
   // termsOfService:
 })
 
@@ -59,7 +68,6 @@ const getUsers = () => {
     setUser([...user, res.data])
   })
   .catch(err => {
-    
   })
 }
 
@@ -73,13 +81,28 @@ const postUser = user => {
     setUser([...user, res.data])
   })
   .catch(err => {
-    
   })
 }
 
 const onInputChange = evt => {
   const name = evt.target.name
   const value = evt.target.value
+  
+  yup
+  .reach(formSchema, name)
+  .validate(value)
+  .then (valid => {
+    setFormErrors({
+      ...formErrors,
+      [name]: '',
+    })
+  })
+  .catch(err => {
+    setFormErrors({
+      ...formErrors,
+      [name]: err.errors[0]
+    })
+  })
   
   setFormValues({
     ...formValues,
@@ -91,17 +114,24 @@ const onCheckBoxChange = evt => {
   evt.preventDefault()
 }
 
+useEffect(() => {
+  formSchema.isValid(formValues)
+    .then(valid => { 
+      setFormDisabled(!valid)
+    })
+}, [setFormValues])
+
 const onSubmit = evt => {
   evt.preventDefault()
 
-  const newUser = {
+    const newUser = {
     name: formValues.name,
     email: formValues.email,
     civil: formValues.civil === 'single' ? false : true,
     password: formValues.password,
     termsOfService: Object.keys(formValues.termsOfService)
     .filter(termsOfService => formValues.termsOfService[termsOfService] ===true)
-  }
+    }
     setUser([...user, newUser])
     postUser(newUser)
     setFormValues(initialFormValues)
