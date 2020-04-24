@@ -7,9 +7,9 @@ function User({details}) {
     return (
         <div>
             <h2>{details.name}</h2>
-            <p>Email: {details.email}</p>
-            <p>Password: {details.password}</p>
-            <p>Married: {details.married ? 'Yes' : 'No'}</p>
+            <p>{details.email}</p>
+            <p>{details.password}</p>
+            <p>{details.married ? '' : ''}</p>
             
             {
         !!details.termsOfService && !!details.termsOfService.length &&

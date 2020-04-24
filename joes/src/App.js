@@ -68,7 +68,7 @@ const [user, setUser] = useState([])
 const [formValues, setFormValues] = useState(initialFormValues)
 
 //STATE KEEPS TRACK OF IF SUBMIT BUTTON IS DISABLED OR NOT
-const [formDisabled, setFormDisabled] = useState(true)
+const [formDisabled, setFormDisabled] = useState(false)
 //STATE NEEDS TO KEEP TRACK OF VALIDATION ERRORS
 const [formErrors, setFormErrors] = useState(initialFormErrors)
 
@@ -105,7 +105,7 @@ useEffect(() => {
     .then(valid => { 
       setFormDisabled(!valid)
     })
-}, [setFormValues])
+}, [formValues])
 
 const onSubmit = evt => {
   evt.preventDefault()
@@ -121,7 +121,7 @@ const onSubmit = evt => {
     }
 
 
-    // setUser([...user, newUser])
+    // WE NEED TO POST OUR NEW USER TO THE API
     postUser(newUser)
     setFormValues(initialFormValues)
 }
@@ -129,38 +129,57 @@ const onSubmit = evt => {
 const onInputChange = evt => {
   const name = evt.target.name
   const value = evt.target.value
-  
+
+
+  // IF THE FORM VALUES CHANGE, WE NEED TO RUN VALIDATION
+  // AND UPDATE ERRORS SLICE OF STATE (SO FORM CAN DISPLAY ERRORS)
+
   yup
   .reach(formSchema, name)
   .validate(value)
-  .then (valid => {
-    setFormErrors({
-      ...formErrors,
-      [name]: '',
-    })
+  .then(valid => {
+setFormErrors({
+  //"HAPPY PATH" WILL CLEAR ERROR AND "SET IT BACK"... VALIDATES!
+  ...formErrors,
+  [name]:'',
+})
   })
   .catch(err => {
+    //"SAD PATH" 
     setFormErrors({
       ...formErrors,
-      [name]: err.errors[0]
+      [name]: err.errors[0],
     })
   })
-  
+
   setFormValues({
     ...formValues,
-    [name]:value
+    [name]:value,
   })
 }
 
+
 const onCheckBoxChange = evt => {
-  evt.preventDefault()
+  const {termsOfService} = evt.target
+  const isChecked = evt.target.checked
+
+  setFormValues({
+    ...formValues,
+    termsOfService: {
+...formValues.termsOfService,
+  [true]: isChecked,
+    }
+  })
 }
+
+
+
 
   return (
     <div className="App">
-      <header className="App-header">
-      <h1>User Form</h1>
-      </header>
+      
+    
+     
 
      
 
@@ -173,14 +192,15 @@ const onCheckBoxChange = evt => {
       errors ={formErrors}
       />
    
-    {/* {
+    {
         user.map(user => {
           return (  
             <User key={user.id} details={user} />
           )
         })
-      } */}
+      }
     </div>
+    
   );
 };
 
