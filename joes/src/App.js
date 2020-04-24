@@ -68,17 +68,19 @@ const [user, setUser] = useState([])
 const [formValues, setFormValues] = useState(initialFormValues)
 
 //STATE KEEPS TRACK OF IF SUBMIT BUTTON IS DISABLED OR NOT
-const [formDisabled, setFormDisabled] = useState(false)
+const [formDisabled, setFormDisabled] = useState(true)
 //STATE NEEDS TO KEEP TRACK OF VALIDATION ERRORS
 const [formErrors, setFormErrors] = useState(initialFormErrors)
 
 // FETCH YOUR USERS FROM API AND SET THEM IN STATE
 const getUsers = () => {
   axios.get(url)
-  .then(res => {
+  .then(function(res) {
+    console.log(res);
     setUser([...user, res.data])
   })
-  .catch(err => {
+  .catch(function(err) {
+    console.log(err)
   })
 }
 
@@ -90,7 +92,7 @@ getUsers()
 // WE NEED A FUNCTION TO ADD A NEW USER TO API
 // AND SET AN UPDATED LIST OF USERS IN STATE
 const postUser = user => {
-  axios.get(url, user)
+  axios.post(url, user)
   .then(res => {
     setUser([...user, res.data])
   })
